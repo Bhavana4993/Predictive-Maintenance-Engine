@@ -4,6 +4,14 @@ import numpy as np
 import joblib
 import os
 
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+model_path = os.path.join(BASE_DIR, "Artifacts", "model.pkl")
+threshold_path = os.path.join(BASE_DIR, "Artifacts", "threshold.pkl")
+
+model = joblib.load(model_path)
+threshold = joblib.load(threshold_path)
+
 # Set Page Config
 st.set_page_config(
     page_title="Industrial Predictive Maintenance & Downtime Cost Estimator",
