@@ -54,26 +54,23 @@ st.markdown("**Real-time Mechanical Telemetry Analysis & Financial Risk Optimiza
 st.markdown("---")
 
 # Load Artifacts
+# Load Artifacts (Case-Insensitive Path Handling)
 @st.cache_resource
 def load_artifacts():
-    model_path = 'artifacts/model.pkl'
-    threshold_path = 'artifacts/threshold.pkl'
+    possible_paths = [
+        ('Artifacts/model.pkl', 'Artifacts/threshold.pkl'),
+        ('artifacts/model.pkl', 'artifacts/threshold.pkl'),
+        ('../Artifacts/model.pkl', '../Artifacts/threshold.pkl'),
+        ('../artifacts/model.pkl', '../artifacts/threshold.pkl')
+    ]
     
-    if not os.path.exists(model_path) or not os.path.exists(threshold_path):
-        # Fallback for root path execution or subfolder execution
-        model_path = '../artifacts/model.pkl'
-        threshold_path = '../artifacts/threshold.pkl'
-        
-    model = joblib.load(model_path)
-    threshold = joblib.load(threshold_path)
-    return model, threshold
-
-try:
-    model, optimal_threshold = load_artifacts()
-    artifacts_loaded = True
-except Exception as e:
-    artifacts_loaded = False
-    st.error(f"⚠️ Could not load model artifacts. Please ensure `model.pkl` and `threshold.pkl` exist in the `artifacts/` folder. Error: {e}")
+    for model_path, threshold_path in possible_paths:
+        if os.path.exists(model_path) and os.path.exists(threshold_path):
+            model = joblib.load(model_path)
+            threshold = joblib.load(threshold_path)
+            return model, threshold
+            
+    raise FileNotFoundError("Could not locate model.pkl and threshold.pkl in 'Artifacts/' or 'artifacts/'")
 
 # Sidebar - Telemetry Controls
 st.sidebar.header("📊 Telemetry Sensor Inputs")
